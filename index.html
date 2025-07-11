@@ -3,105 +3,147 @@
 <head>
   <meta charset="UTF-8">
   <title>Notice Board</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body {
-      font-family: Times, Arial, sans-serif;
-      background: #f2f4f6;
-      padding: 30px;
-      color: #333;
+    :root {
+      --primary-color: #003366;
+      --accent-color: #0066cc;
+      --bg-color: #f7f9fb;
+      --text-color: #222;
+      --border-radius: 10px;
     }
 
-    p {
-      margin-bottom: 10px;
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      margin: 0;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 700px;
+    }
+
+    h2 {
+      color: var(--primary-color);
+      margin-bottom: 16px;
+    }
+
+    p.meta {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 20px;
+      line-height: 1.6;
     }
 
     form {
-      background-color: #ffffff;
+      background: #fff;
       padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.1);
-      max-width: 600px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      margin-bottom: 30px;
     }
 
-    textarea {
-      width: 100%;
-      height: 100px;
-      padding: 10px;
-      margin-top: 6px;
-      margin-bottom: 12px;
-      font-family: Times, Arial, sans-serif;
-      font-size: 15px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      resize: vertical;
+    label {
+      display: block;
+      margin-top: 10px;
+      margin-bottom: 6px;
+      font-weight: bold;
     }
 
-    select {
+    textarea, select {
       width: 100%;
-      padding: 8px;
-      font-size: 15px;
-      margin-bottom: 16px;
-      border-radius: 8px;
+      padding: 12px;
       border: 1px solid #ccc;
+      border-radius: var(--border-radius);
+      font-size: 15px;
+      margin-bottom: 14px;
+      transition: border-color 0.2s;
+    }
+
+    textarea:focus, select:focus {
+      border-color: var(--accent-color);
+      outline: none;
     }
 
     button {
-      background-color: #1e90ff;
+      background-color: var(--accent-color);
       color: white;
-      padding: 10px 20px;
-      font-size: 16px;
       border: none;
-      border-radius: 8px;
+      padding: 12px 24px;
+      font-size: 16px;
+      border-radius: var(--border-radius);
       cursor: pointer;
-      transition: background-color 0.3s ease, box-shadow 0.2s ease;
+      transition: background 0.3s;
     }
 
     button:hover {
-      background-color: #156acb;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      background-color: #004c99;
     }
 
-    .data-box {
-      margin-top: 30px;
-      padding: 15px;
-      background: #ffffff;
-      border: 1px solid #ccc;
-      border-radius: 12px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.05);
-      max-width: 600px;
+    .notice-list {
+      background: #fff;
+      padding: 20px;
+      border-radius: var(--border-radius);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
     }
 
     .notice-item {
+      border-left: 5px solid var(--accent-color);
+      padding-left: 12px;
       margin-bottom: 12px;
-      padding-left: 10px;
-      border-left: 4px solid #1e90ff;
+    }
+
+    .notice-item:last-child {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 500px) {
+      body {
+        padding: 20px 10px;
+      }
     }
   </style>
 </head>
 <body>
-  <p><strong>Date:</strong> <span id="currentDate"></span><br>
-  <strong>Location:</strong> Hanoi, Vietnam<br>
-  <strong>Username:</strong> Bui Minh Tu</p>
+  <div class="container">
+    <h2>📋 Notice Board</h2>
 
-  <form id="noticeForm">
-    <label><strong>Notices:</strong></label>
-    <textarea id="noticeInput" placeholder="Click here to typing"></textarea>
+    <p class="meta">
+      <strong>Date:</strong> <span id="currentDate"></span><br>
+      <strong>Location:</strong> Hanoi, Vietnam<br>
+      <strong>Username:</strong> Bui Minh Tu
+    </p>
 
-    <label for="modeSelect">Mode of notifications:</label>
-    <select id="modeSelect">
-      <option value="School">School</option>
-      <option value="Home">Home</option>
-    </select>
+    <form id="noticeForm">
+      <label for="noticeInput">Your Notice:</label>
+      <textarea id="noticeInput" placeholder="Type your notice here..."></textarea>
 
-    <button type="submit">📩 Register</button>
-  </form>
+      <label for="modeSelect">Category:</label>
+      <select id="modeSelect">
+        <option value="School">📚 School</option>
+        <option value="Home">🏠 Home</option>
+      </select>
 
-  <div class="data-box" id="noticeList">
-    <em>No notices yet.</em>
+      <button type="submit">➕ Add Notice</button>
+    </form>
+
+    <div class="notice-list" id="noticeList">
+      <em>No notices yet.</em>
+    </div>
   </div>
 
   <script>
-    // Set current date
+    // Set date
     const dateElem = document.getElementById("currentDate");
     const today = new Date();
     const formattedDate = today.toLocaleDateString('en-GB');
@@ -119,10 +161,10 @@
 
       list.innerHTML = "";
       data.forEach(item => {
-        const p = document.createElement("div");
-        p.className = "notice-item";
-        p.innerHTML = `<strong>${item.mode}</strong> says: ${item.text} in ${item.date}`;
-        list.appendChild(p);
+        const div = document.createElement("div");
+        div.className = "notice-item";
+        div.innerHTML = `<strong>${item.mode}</strong> said: "${item.text}"<br><small>${item.date}</small>`;
+        list.appendChild(div);
       });
     }
 
