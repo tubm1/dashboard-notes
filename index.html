@@ -143,51 +143,61 @@
   </div>
 
   <script>
-    // Set date
-    const dateElem = document.getElementById("currentDate");
-    const today = new Date();
-    const formattedDate = today.toLocaleDateString('en-GB');
-    dateElem.textContent = formattedDate;
+  const dateElem = document.getElementById("currentDate");
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString('en-GB');
+  dateElem.textContent = formattedDate;
 
-    const form = document.getElementById("noticeForm");
-    const list = document.getElementById("noticeList");
+  const form = document.getElementById("noticeForm");
+  const list = document.getElementById("noticeList");
 
-    function loadNotices() {
-      const data = JSON.parse(localStorage.getItem("notices") || "[]");
-      if (data.length === 0) {
-        list.innerHTML = "<em>No notices yet.</em>";
-        return;
-      }
+  function loadNotices() {
+    const data = JSON.parse(localStorage.getItem("notices") || "[]");
 
-      list.innerHTML = "";
-      data.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "notice-item";
-        div.innerHTML = `<strong>${item.mode}</strong> said: "${item.text}"<br><small>${item.date}</small>`;
-        list.appendChild(div);
-      });
+    const now = Date.now();
+    const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
+
+    // Lọc ra những thông báo còn hiệu lực
+    const filtered = data.filter(item => now - item.timestamp <= oneWeekMs);
+
+    // Cập nhật lại localStorage sau khi loại bỏ mục hết hạn
+    localStorage.setItem("notices", JSON.stringify(filtered));
+
+    if (filtered.length === 0) {
+      list.innerHTML = "<em>No notices yet.</em>";
+      return;
     }
 
-    form.addEventListener("submit", function(e) {
-      e.preventDefault();
-      const text = document.getElementById("noticeInput").value.trim();
-      const mode = document.getElementById("modeSelect").value;
-      if (!text) return;
-
-      const newNotice = {
-        text,
-        mode,
-        date: formattedDate
-      };
-
-      const oldData = JSON.parse(localStorage.getItem("notices") || "[]");
-      oldData.push(newNotice);
-      localStorage.setItem("notices", JSON.stringify(oldData));
-      document.getElementById("noticeInput").value = "";
-      loadNotices();
+    list.innerHTML = "";
+    filtered.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "notice-item";
+      div.innerHTML = `<strong>${item.mode}</strong> said: "${item.text}"<br><small>${item.date}</small>`;
+      list.appendChild(div);
     });
+  }
 
+  form.addEventListener("submit", function(e) {
+    e.preventDefault();
+    const text = document.getElementById("noticeInput").value.trim();
+    const mode = document.getElementById("modeSelect").value;
+    if (!text) return;
+
+    const newNotice = {
+      text,
+      mode,
+      date: formattedDate,
+      timestamp: Date.now()
+    };
+
+    const oldData = JSON.parse(localStorage.getItem("notices") || "[]");
+    oldData.push(newNotice);
+    localStorage.setItem("notices", JSON.stringify(oldData));
+    document.getElementById("noticeInput").value = "";
     loadNotices();
-  </script>
+  });
+
+  loadNotices();
+</script>
 </body>
 </html>
