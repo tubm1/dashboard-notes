@@ -168,27 +168,39 @@
     }
 
     function renderNotes() {
-      const subjectFilter = document.getElementById('subject-select').value;
-      const noteList = document.getElementById('note-list');
-      noteList.innerHTML = '';
+  const subjectFilter = document.getElementById('subject-select').value;
+  const noteList = document.getElementById('note-list');
+  noteList.innerHTML = '';
 
-      const now = new Date();
+  const now = new Date();
+  const twoWeeksInMs = 14 * 24 * 60 * 60 * 1000;
 
-      notes
-        .filter(n => !subjectFilter || n.subject === subjectFilter)
-        .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
-        .forEach(note => {
-          const deadlineDate = new Date(note.deadline);
-          const diffDays = Math.ceil((deadlineDate - now) / (1000 * 60 * 60 * 24));
-          const alertMsg = diffDays <= 3 ? ' 🔔 Sắp tới hạn!' : '';
-          const el = document.createElement('div');
-          el.className = 'note-item';
-          el.innerHTML = `
-            <strong>${note.subject}</strong>: ${note.content}<br/>
-            🗓 Deadline: ${note.deadline} ${alertMsg}
-          `;
-          noteList.appendChild(el);
-        });
+  // Lọc các ghi chú còn hạn sử dụng
+  notes = notes.filter(note => {
+    const created = new Date(note.createdAt);
+    return now - created <= twoWeeksInMs;
+  });
+
+  // Cập nhật lại localStorage sau khi lọc
+  localStorage.setItem('notes', JSON.stringify(notes));
+
+  notes
+    .filter(n => !subjectFilter || n.subject === subjectFilter)
+    .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
+    .forEach(note => {
+      const deadlineDate = new Date(note.deadline);
+      const diffDays = Math.ceil((deadlineDate - now) / (1000 * 60 * 60 * 24));
+      const alertMsg = diffDays <= 3 ? ' 🔔 Sắp tới hạn!' : '';
+      const el = document.createElement('div');
+      el.className = 'note-item';
+      el.innerHTML = `
+        <strong>${note.subject}</strong>: ${note.content}<br/>
+        🗓 Deadline: ${note.deadline} ${alertMsg}
+      `;
+      noteList.appendChild(el);
+    });
+}
+
     }
 
     function updateAvailableTime() {
@@ -201,3 +213,4 @@
   </script>
 </body>
 </html>
+
