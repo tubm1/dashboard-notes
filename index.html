@@ -1,203 +1,203 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Notice Board</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>📼 Retro Notes App</title>
   <style>
-    :root {
-      --primary-color: #003366;
-      --accent-color: #0066cc;
-      --bg-color: #f7f9fb;
-      --text-color: #222;
-      --border-radius: 10px;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
     body {
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
-      margin: 0;
-      padding: 40px 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .container {
-      width: 100%;
-      max-width: 700px;
-    }
-
-    h2 {
-      color: var(--primary-color);
-      margin-bottom: 16px;
-    }
-
-    p.meta {
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 20px;
-      line-height: 1.6;
-    }
-
-    form {
-      background: #fff;
+      font-family: 'Courier New', Courier, monospace;
+      background: #f4f1de;
+      color: #222;
       padding: 20px;
-      border-radius: var(--border-radius);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      margin-bottom: 30px;
+      margin: 0;
     }
 
-    label {
-      display: block;
-      margin-top: 10px;
-      margin-bottom: 6px;
-      font-weight: bold;
+    h1, h2, h3 {
+      color: #2d6a4f;
+      text-align: center;
     }
 
-    textarea, select {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: var(--border-radius);
-      font-size: 15px;
-      margin-bottom: 14px;
-      transition: border-color 0.2s;
-    }
-
-    textarea:focus, select:focus {
-      border-color: var(--accent-color);
-      outline: none;
+    input, select, button {
+      padding: 10px;
+      font-family: inherit;
+      margin: 5px;
+      border: 2px solid #555;
+      background-color: #fff;
+      border-radius: 5px;
     }
 
     button {
-      background-color: var(--accent-color);
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      font-size: 16px;
-      border-radius: var(--border-radius);
+      background-color: #ffd166;
       cursor: pointer;
-      transition: background 0.3s;
     }
 
     button:hover {
-      background-color: #004c99;
+      background-color: #fab005;
     }
 
-    .notice-list {
-      background: #fff;
-      padding: 20px;
-      border-radius: var(--border-radius);
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    .hidden {
+      display: none;
     }
 
-    .notice-item {
-      border-left: 5px solid var(--accent-color);
-      padding-left: 12px;
-      margin-bottom: 12px;
+    .error {
+      color: red;
+      text-align: center;
     }
 
-    .notice-item:last-child {
-      margin-bottom: 0;
+    .controls, .status-block, .note-block {
+      margin: 20px auto;
+      max-width: 700px;
+      background-color: #fffcf2;
+      padding: 15px;
+      border: 3px dashed #000;
     }
 
-    @media (max-width: 500px) {
-      body {
-        padding: 20px 10px;
+    .note-item {
+      border-bottom: 1px dashed #ccc;
+      padding: 8px 0;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 700px;
+      margin: auto;
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 600px) {
+      input, select, button {
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      header {
+        flex-direction: column;
+        gap: 10px;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>📋 Notice Board</h2>
+  <div id="login-screen">
+    <h1>📼 Retro Notes</h1>
+    <input type="text" id="username" placeholder="Tên đăng nhập" />
+    <input type="password" id="password" placeholder="Mật khẩu" />
+    <button onclick="login()">Đăng nhập</button>
+    <p id="login-error" class="error"></p>
+  </div>
 
-    <p class="meta">
-      <strong>Date:</strong> <span id="currentDate"></span><br>
-      <strong>Location:</strong> Hanoi, Vietnam<br>
-      <strong>Username:</strong> Bui Minh Tu
-    </p>
+  <div id="app" class="hidden">
+    <header>
+      <h2>📚 Quản lý Deadline & Notes</h2>
+      <button onclick="logout()">Đăng xuất</button>
+    </header>
 
-    <form id="noticeForm">
-      <label for="noticeInput">Your Notice:</label>
-      <textarea id="noticeInput" placeholder="Type your notice here..."></textarea>
-
-      <label for="modeSelect">Category:</label>
-      <select id="modeSelect">
-        <option value="School">📚 School</option>
-        <option value="Home">🏠 Home</option>
+    <section class="controls">
+      <select id="subject-select">
+        <option value="">-- Chọn môn học --</option>
+        <option value="PR1">PR1 - Programming 1</option>
+        <option value="RES">RES - Research Method</option>
+        <option value="PCO">PCO - Principle of Computer</option>
+        <option value="POP">POP - Operating System</option>
       </select>
+      <input type="text" id="note-input" placeholder="Nhập nội dung ghi chú..." />
+      <input type="date" id="deadline-input" />
+      <button onclick="addNote()">Thêm ghi chú</button>
+    </section>
 
-      <button type="submit">➕ Add Notice</button>
-    </form>
+    <section class="status-block">
+      <h3>⏳ Thời gian khả dụng</h3>
+      <p id="available-time"></p>
+    </section>
 
-    <div class="notice-list" id="noticeList">
-      <em>No notices yet.</em>
-    </div>
+    <section class="note-block">
+      <h3>📝 Các ghi chú</h3>
+      <div id="note-list"></div>
+    </section>
   </div>
 
   <script>
-  const dateElem = document.getElementById("currentDate");
-  const today = new Date();
-  const formattedDate = today.toLocaleDateString('en-GB');
-  dateElem.textContent = formattedDate;
+    const USERNAME = 'tubm';
+    const PASSWORD = '123123123';
 
-  const form = document.getElementById("noticeForm");
-  const list = document.getElementById("noticeList");
+    function login() {
+      const user = document.getElementById('username').value;
+      const pass = document.getElementById('password').value;
+      const errorEl = document.getElementById('login-error');
 
-  function loadNotices() {
-    const data = JSON.parse(localStorage.getItem("notices") || "[]");
-
-    const now = Date.now();
-    const oneWeekMs = 7 * 24 * 60 * 60 * 1000;
-
-    // Lọc ra những thông báo còn hiệu lực
-    const filtered = data.filter(item => now - item.timestamp <= oneWeekMs);
-
-    // Cập nhật lại localStorage sau khi loại bỏ mục hết hạn
-    localStorage.setItem("notices", JSON.stringify(filtered));
-
-    if (filtered.length === 0) {
-      list.innerHTML = "<em>No notices yet.</em>";
-      return;
+      if (user === USERNAME && pass === PASSWORD) {
+        document.getElementById('login-screen').classList.add('hidden');
+        document.getElementById('app').classList.remove('hidden');
+        updateAvailableTime();
+        renderNotes();
+      } else {
+        errorEl.textContent = 'Sai tên đăng nhập hoặc mật khẩu!';
+      }
     }
 
-    list.innerHTML = "";
-    filtered.forEach(item => {
-      const div = document.createElement("div");
-      div.className = "notice-item";
-      div.innerHTML = `<strong>${item.mode}</strong> said: "${item.text}"<br><small>${item.date}</small>`;
-      list.appendChild(div);
-    });
-  }
+    function logout() {
+      document.getElementById('app').classList.add('hidden');
+      document.getElementById('login-screen').classList.remove('hidden');
+    }
 
-  form.addEventListener("submit", function(e) {
-    e.preventDefault();
-    const text = document.getElementById("noticeInput").value.trim();
-    const mode = document.getElementById("modeSelect").value;
-    if (!text) return;
+    let notes = JSON.parse(localStorage.getItem('notes')) || [];
 
-    const newNotice = {
-      text,
-      mode,
-      date: formattedDate,
-      timestamp: Date.now()
-    };
+    function addNote() {
+      const subject = document.getElementById('subject-select').value;
+      const content = document.getElementById('note-input').value;
+      const deadline = document.getElementById('deadline-input').value;
 
-    const oldData = JSON.parse(localStorage.getItem("notices") || "[]");
-    oldData.push(newNotice);
-    localStorage.setItem("notices", JSON.stringify(oldData));
-    document.getElementById("noticeInput").value = "";
-    loadNotices();
-  });
+      if (!subject || !content || !deadline) {
+        alert('Vui lòng điền đầy đủ thông tin.');
+        return;
+      }
 
-  loadNotices();
-</script>
+      const note = {
+        subject,
+        content,
+        deadline,
+        createdAt: new Date().toISOString()
+      };
+
+      notes.push(note);
+      localStorage.setItem('notes', JSON.stringify(notes));
+      renderNotes();
+    }
+
+    function renderNotes() {
+      const subjectFilter = document.getElementById('subject-select').value;
+      const noteList = document.getElementById('note-list');
+      noteList.innerHTML = '';
+
+      const now = new Date();
+
+      notes
+        .filter(n => !subjectFilter || n.subject === subjectFilter)
+        .sort((a, b) => new Date(a.deadline) - new Date(b.deadline))
+        .forEach(note => {
+          const deadlineDate = new Date(note.deadline);
+          const diffDays = Math.ceil((deadlineDate - now) / (1000 * 60 * 60 * 24));
+          const alertMsg = diffDays <= 3 ? ' 🔔 Sắp tới hạn!' : '';
+          const el = document.createElement('div');
+          el.className = 'note-item';
+          el.innerHTML = `
+            <strong>${note.subject}</strong>: ${note.content}<br/>
+            🗓 Deadline: ${note.deadline} ${alertMsg}
+          `;
+          noteList.appendChild(el);
+        });
+    }
+
+    function updateAvailableTime() {
+      const now = new Date();
+      const hoursLeft = 24 - now.getHours() - 5; // Trừ 5h ngủ
+      const minutesLeft = 60 - now.getMinutes();
+      const timeText = `Còn khoảng ${hoursLeft} giờ ${minutesLeft} phút hôm nay (trừ 5h ngủ).`;
+      document.getElementById('available-time').textContent = timeText;
+    }
+  </script>
 </body>
 </html>
